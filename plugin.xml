@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.tgdd.plugins.PushNotification"
+    version="1.0.0">
+
+  <name>TGDD - PushNotification</name>
+	<author>Duc Quang</author>
+
+	<description>
+		This plugin allows your application to receive push notifications on Android, iOS, WP8 and devices.
+    Android uses Google Cloud Messaging.
+    iOS uses Apple APNS Notifications.
+    WP8 uses Microsoft MPNS Notifications.
+	</description>
+
+	<license>MIT</license>
+
+	<js-module src="www/PushNotification.js" name="PushNotification">
+        <clobbers target="PushNotification" />
+	</js-module>
+	<js-module src="www/tgdd-notification-bage.js" name="TGDDNotification">
+    <clobbers target="tgdd.notification.bage" />
+  </js-module>
+	<engines>
+		<engine name="cordova" version=">=3.0.0" />
+	</engines>
+	<dependency id="org.apache.cordova.device" url="https://github.com/apache/cordova-plugin-device" />
+	<!-- android -->
+	<platform name="android">
+
+		<config-file target="res/xml/config.xml" parent="/*">
+			<feature name="PushPlugin" >
+				<param name="android-package" value="com.plugin.gcm.PushPlugin"/>
+			</feature>
+		</config-file>
+		<config-file target="res/xml/config.xml" parent="/*">
+	      <feature name="TGDDNotification">
+	        <param name="android-package" value="tgdd.notification.badge.TGDDNotification"/>
+	      </feature>
+    	</config-file>
+    	<lib-file src="libs/android/android-support-v4.jar" />
+		<config-file target="AndroidManifest.xml" parent="/manifest">
+			<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+			<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+			<uses-permission android:name="android.permission.WAKE_LOCK" />
+			<uses-permission android:name="android.permission.VIBRATE"/>
+			<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+			<permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+			<uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
+
+			<!--for android-->
+	    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+	    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/>
+
+      <!--for Samsung-->
+      <uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
+      <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
+
+      <!--for htc-->
+      <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS"/>
+      <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT"/>
+
+      <!--for sony-->
+      <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE"/>
+
+      <!--for apex-->
+      <uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT"/>
+
+		</config-file>
+
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<activity android:name="com.plugin.gcm.PushHandlerActivity" android:exported="true"/>
+			<receiver android:name="com.plugin.gcm.CordovaGCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+				<intent-filter>
+					<action android:name="com.google.android.c2dm.intent.RECEIVE" />
+					<action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+					<category android:name="$PACKAGE_NAME" />
+				</intent-filter>
+			</receiver>
+			<service android:name="com.plugin.gcm.GCMIntentService" />
+		</config-file>
+
+		<source-file src="src/android/libs/gcm.jar" target-dir="libs/" />
+		<source-file src="src/android/com/plugin/gcm/CordovaGCMBroadcastReceiver.java" target-dir="src/com/plugin/gcm/" />
+		<source-file src="src/android/com/plugin/gcm/GCMIntentService.java" target-dir="src/com/plugin/gcm/" />
+		<source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/" />
+		<source-file src="src/android/com/plugin/gcm/PushPlugin.java" target-dir="src/com/plugin/gcm/" />
+		<source-file src="src/android/com/plugin/android-support-v13.jar" target-dir="libs/" />
+
+		<source-file src="src/android/tgdd/notification/badge/TGDDNotification.java" target-dir="src/tgdd/notification/badge" />
+
+    <source-file src="src/android/me/leolin/shortcutbadger/ShortcutBadgeException.java" target-dir="src/me/leolin/shortcutbadger" />
+    <source-file src="src/android/me/leolin/shortcutbadger/ShortcutBadger.java" target-dir="src/me/leolin/shortcutbadger" />
+
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/AdwHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/AndroidHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/ApexHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/hTCHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/LGHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/NewHtcHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/NovaHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/SamsungHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+    <source-file src="src/android/me/leolin/shortcutbadger/impl/SonyHomeBadger.java" target-dir="src/me/leolin/shortcutbadger/impl" />
+
+    <source-file src="src/android/me/leolin/shortcutbadger/util/ImageUtil.java" target-dir="src/me/leolin/shortcutbadger/util" />
+	</platform>
+
+
+	<!-- ios -->
+	<platform name="ios">
+
+		<config-file target="config.xml" parent="/*">
+			<feature name="PushPlugin">
+				<param name="ios-package" value="PushPlugin"/>
+			</feature>
+		</config-file>
+
+		<source-file src="src/ios/AppDelegate+notification.m" />
+		<source-file src="src/ios/PushPlugin.m" />
+
+		<header-file src="src/ios/AppDelegate+notification.h" />
+		<header-file src="src/ios/PushPlugin.h" />
+
+	</platform>
+
+    <!-- wp8 -->
+    <platform name="wp8">
+
+    <config-file target="config.xml" parent="/*">
+      <feature name="PushPlugin">
+        <param name="wp-package" value="PushPlugin"/>
+      </feature>
+    </config-file>
+
+    <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
+      <Capability Name="ID_CAP_PUSH_NOTIFICATION"/>
+    </config-file>
+
+    <source-file src="src/wp8/PushPlugin.cs" />
+    <framework src="src/wp8/Newtonsoft.Json.dll" custom="true" />
+
+  </platform>
+</plugin>
