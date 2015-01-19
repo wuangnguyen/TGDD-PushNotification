@@ -102,11 +102,10 @@ if ( device.platform == 'android' || device.platform == 'Android'){
     });
 } else if (device.platform == "Win32NT") {
     pushNotification.register(
-    channelHandler,
+    wp8SuccessHandlerHandler,
     errorHandler,
     {
 	   "channelName": "channelName",
-       "ecb": "onNotificationWP8",
        "uccb": "channelHandler",
        "errcb": "jsonErrorHandler"
     });
@@ -265,11 +264,10 @@ pushNotification.unregister(successHandler, errorHandler, options);
 
 if(device.platform == "Win32NT"){
     pushNotification.register(
-        channelHandler,
+        wp8SuccessHandlerHandler,
         errorHandler,
         {
             "channelName": channelName,
-            "ecb": "onNotificationWP8",
             "uccb": "channelHandler",
             "errcb": "jsonErrorHandler"
         });
@@ -280,27 +278,6 @@ if(device.platform == "Win32NT"){
 #### channelHandler (WP8 only)
 Called after a push notification channel is opened and push notification URI is returned. [The application is now set to receive notifications.](http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202940(v=vs.105).aspx)
 
-
-#### ecb (WP8 Only)
-Event callback that gets called when your device receives a notification. This is fired if the app is running when you receive the toast notification, or raw notification.
-
-```js
-//handle MPNS notifications for WP8
-function onNotificationWP8(e) {
-
-	if (e.type == "toast" && e.jsonContent) {
-		pushNotification.showToastNotification(successHandler, errorHandler,
-		{
-			"Title": e.jsonContent["wp:Text1"], "Subtitle": e.jsonContent["wp:Text2"], "NavigationUri": e.jsonContent["wp:Param"]
-		});
-		}
-
-	if (e.type == "raw" && e.jsonContent) {
-		alert(e.jsonContent.Body);
-	}
-}
-```
-
 #### uccb (WP8 only)
 Event callback that gets called when the channel you have opened gets its Uri updated. This function is needed in case the MPNS updates the opened channel Uri. This function will take care of showing updated Uri.
 
@@ -310,20 +287,11 @@ Event callback that gets called when server error occurs when receiving notifica
 
 ```js
 function jsonErrorHandler(error) {
-		$("#app-status-ul").append('<li style="color:red;">error:' + error.code + '</li>');
-		$("#app-status-ul").append('<li style="color:red;">error:' + error.message + '</li>');
+		aler(error.code + " " + error.message);
 	}
 ```
 
-#### showToastNotification (WP8 only)
-Show toast notification if app is deactivated.
-
-    pushNotification.showToastNotification(successCallback, errorCallback, options);
-
-The toast notification's properties are set explicitly using json. They can be get in onNotificationWP8 and used for whatever purposes needed.
-
-
-To control the launch page when the user taps on your toast notification when the app is not running, add the following code to your mainpage.xaml.cs
+To control the launch page when the user taps on your toast notification when the app is not running, add the following code to your Mainpage.xaml.cs
 ```cs
 protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
 {
@@ -340,8 +308,6 @@ protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventA
     }
 }
 ```
-Or you can add another `Page2.xaml` just for testing toast navigate url. Like the [MSDN Toast Sample](http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202967(v=vs.105).aspx)
-
 To test the tile notification, you will need to add tile images like the [MSDN Tile Sample](http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202970(v=vs.105).aspx#BKMK_CreatingaPushClienttoReceiveTileNotifications)
 
 #### unregister (WP8 Only)
